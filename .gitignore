@@ -34,3 +34,6 @@ build/
 
 ### secrets ###
 src/main/resources/local-secrets.properties
+
+
+Domain.md
