@@ -1,9 +1,9 @@
 package com.cinereserve.cine_reserve.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Movie {
@@ -12,6 +12,14 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     private String title;
+
+    private List<Show> shows = new ArrayList<>();
+
+    @OneToMany(mappedBy = "movie")
+    public void addShows(Show show) {
+        shows.add(show);
+        show.setMovie(this);
+    }
 
     public Movie() {
 
