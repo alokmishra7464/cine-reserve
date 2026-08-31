@@ -10,6 +10,7 @@ import com.cinereserve.cine_reserve.repository.ShowRepository;
 import com.cinereserve.cine_reserve.service.ShowService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -88,6 +89,18 @@ public class ShowServiceTest {
         assertNotNull(result);
         assertEquals(3L, result.getId());
 
+        ArgumentCaptor<Show> showCaptor = ArgumentCaptor.forClass(Show.class);
+
+        verify(showRepository).save(showCaptor.capture());
+
+        Show capturedShow = showCaptor.getValue();
+
+        assertEquals(movie, capturedShow.getMovie());
+        assertEquals(screen, capturedShow.getScreen());
+        assertEquals(starTime, capturedShow.getStartTime());
+        assertEquals(endTime, capturedShow.getEndTime());
+        assertEquals(price, capturedShow.getPrice());
+
     }
 
     @Test
@@ -111,7 +124,7 @@ public class ShowServiceTest {
     }
 
     @Test
-    void shouldReturnExceptionWhenScreenNotFound() {
+    void shouldThrowExceptionWhenScreenNotFound() {
 
         Movie movie = new Movie();
         movie.setId(1L);
@@ -130,6 +143,80 @@ public class ShowServiceTest {
                         999L,
                         LocalDateTime.of(2026,9,1,18,0),
                         LocalDateTime.of(2026,9,1,20,0),
+                        new BigDecimal("250.00")
+                )
+        );
+
+        verify(showRepository, never()).save(any(Show.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStartTimeIsAfterEndTime() {
+
+        Movie movie = new Movie();
+        movie.setTitle("Test Movie");
+        movie.setId(1L);
+
+        Screen screen = new Screen();
+        screen.setId(2L);
+        screen.setName("Test Screen");
+
+        when(movieRepository.findById(1L))
+                .thenReturn(Optional.of(movie));
+
+        when(screenRepository.findById(2L))
+                .thenReturn(Optional.of(screen));
+
+        LocalDateTime startTime = LocalDateTime.of(2026, 9,1,20,0);
+        LocalDateTime endTime = LocalDateTime.of(2026,9,1,18,0);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> showService.createShow(
+                        1L,
+                        2L,
+                        startTime,
+                        endTime,
+                        new BigDecimal("250.00")
+                )
+        );
+
+        verify(showRepository, never()).save(any(Show.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenShowOverlapsExistingShow() {
+
+        Movie movie = new Movie();
+        movie.setId(1L);
+        movie.setTitle("Test Movie");
+
+        Screen screen = new Screen();
+        screen.setId(2L);
+        screen.setName("Test Screen");
+
+        LocalDateTime startTime = LocalDateTime.of(2026, 9,1,19,0);
+        LocalDateTime endTime = LocalDateTime.of(2026, 9,1,21,0);
+
+        when(movieRepository.findById(1L))
+                .thenReturn(Optional.of(movie));
+
+        when(screenRepository.findById(2L))
+                .thenReturn(Optional.of(screen));
+
+        when(showRepository.existsByScreenIdAndStartTimeBeforeAndEndTimeAfter(
+                screen.getId(),
+                endTime,
+                startTime
+        )).thenReturn(true);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> showService.createShow(
+                        1L,
+                        2L,
+                        startTime,
+                        endTime,
                         new BigDecimal("250.00")
                 )
         );
