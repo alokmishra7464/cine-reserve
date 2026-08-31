@@ -109,4 +109,31 @@ public class ShowServiceTest {
 
         verify(showRepository, never()).save(any(Show.class));
     }
+
+    @Test
+    void shouldReturnExceptionWhenScreenNotFound() {
+
+        Movie movie = new Movie();
+        movie.setId(1L);
+        movie.setTitle("Test movie");
+
+        when(movieRepository.findById(1L))
+                .thenReturn(Optional.of(movie));
+
+        when(screenRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                RuntimeException.class,
+                () -> showService.createShow(
+                        1L,
+                        999L,
+                        LocalDateTime.of(2026,9,1,18,0),
+                        LocalDateTime.of(2026,9,1,20,0),
+                        new BigDecimal("250.00")
+                )
+        );
+
+        verify(showRepository, never()).save(any(Show.class));
+    }
 }
