@@ -1,5 +1,9 @@
 package com.cinereserve.cine_reserve.service;
 
+import com.cinereserve.cine_reserve.exception.InvalidShowTimeException;
+import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
+import com.cinereserve.cine_reserve.exception.ScreenNotFoundException;
+import com.cinereserve.cine_reserve.exception.ShowConflictException;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
@@ -36,13 +40,13 @@ public class ShowService {
             BigDecimal price)
     {
         Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Movie Not Found !!!"));
+                .orElseThrow(() -> new MovieNotFoundException("Movie not found"));
 
         Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(() -> new RuntimeException("Screen Not Found !!!"));
+                .orElseThrow(() -> new ScreenNotFoundException("Screen Not Found !!!"));
 
         if(!startTime.isBefore(endTime)) {
-            throw new IllegalArgumentException("Start time must be before End time");
+            throw new InvalidShowTimeException("Start time must be before End time");
         }
 
         boolean overlapping = showRepository.existsByScreenIdAndStartTimeBeforeAndEndTimeAfter(
@@ -52,7 +56,7 @@ public class ShowService {
         );
 
         if(overlapping) {
-            throw new IllegalStateException("Screen already has a show during this time");
+            throw new ShowConflictException("Screen already has a show during this time");
         }
 
         Show show = new Show();

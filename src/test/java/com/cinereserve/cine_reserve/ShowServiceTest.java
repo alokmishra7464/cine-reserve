@@ -1,5 +1,9 @@
 package com.cinereserve.cine_reserve;
 
+import com.cinereserve.cine_reserve.exception.InvalidShowTimeException;
+import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
+import com.cinereserve.cine_reserve.exception.ScreenNotFoundException;
+import com.cinereserve.cine_reserve.exception.ShowConflictException;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
@@ -110,7 +114,7 @@ public class ShowServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                RuntimeException.class,
+                MovieNotFoundException.class,
                 () -> showService.createShow(
                         999L,
                         2L,
@@ -137,7 +141,7 @@ public class ShowServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                RuntimeException.class,
+                ScreenNotFoundException.class,
                 () -> showService.createShow(
                         1L,
                         999L,
@@ -171,7 +175,7 @@ public class ShowServiceTest {
         LocalDateTime endTime = LocalDateTime.of(2026,9,1,18,0);
 
         assertThrows(
-                IllegalArgumentException.class,
+                InvalidShowTimeException.class,
                 () -> showService.createShow(
                         1L,
                         2L,
@@ -211,7 +215,7 @@ public class ShowServiceTest {
         )).thenReturn(true);
 
         assertThrows(
-                IllegalStateException.class,
+                ShowConflictException.class,
                 () -> showService.createShow(
                         1L,
                         2L,
