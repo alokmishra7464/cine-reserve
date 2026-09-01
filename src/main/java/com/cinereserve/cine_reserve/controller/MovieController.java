@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.controller;
 
+import com.cinereserve.cine_reserve.dto.CreateMovieRequest;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.service.MovieService;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/movies")
 public class MovieController {
 
     private final MovieService movieService;
@@ -15,14 +17,14 @@ public class MovieController {
         this.movieService = movieService;
     }
 
-    @GetMapping("/movies")
+    @GetMapping
     public List<Movie> getMovies() {
         return movieService.getMovies();
     }
 
-    @PostMapping("/movies")
-    public Movie createMovie(@RequestParam String title) {
-        return movieService.createMovie(title);
+    @PostMapping
+    public Movie createMovie(@RequestBody CreateMovieRequest request) {
+        return movieService.createMovie(request.getTitle());
     }
 
 }

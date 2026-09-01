@@ -1,14 +1,10 @@
-package com.cinereserve.cine_reserve;
+package com.cinereserve.cine_reserve.repository;
 
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
 import com.cinereserve.cine_reserve.model.Theater;
-import com.cinereserve.cine_reserve.repository.MovieRepository;
-import com.cinereserve.cine_reserve.repository.ScreenRepository;
-import com.cinereserve.cine_reserve.repository.TheaterRepository;
 import org.junit.jupiter.api.Test;
-import com.cinereserve.cine_reserve.repository.ShowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

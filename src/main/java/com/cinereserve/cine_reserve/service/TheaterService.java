@@ -14,4 +14,12 @@ public class TheaterService {
         this.theaterRepository = theaterRepository;
     }
 
+    public Theater createTheater(String name, String address, String city) {
+        Theater theater = new Theater();
+        theater.setName(name);
+        theater.setAddress(address);
+        theater.setCity(city);
+
+        return theaterRepository.save(theater);
+    }
 }

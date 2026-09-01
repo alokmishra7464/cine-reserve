@@ -21,7 +21,8 @@ public class MovieService {
     }
 
     public Movie createMovie(String title) {
-        Movie movie = new Movie(title);
+        Movie movie = new Movie();
+        movie.setTitle(title);
         return movieRepository.save(movie);
     }
 

@@ -1,4 +1,4 @@
-package com.cinereserve.cine_reserve;
+package com.cinereserve.cine_reserve.service;
 
 import com.cinereserve.cine_reserve.exception.InvalidShowTimeException;
 import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
@@ -7,11 +7,9 @@ import com.cinereserve.cine_reserve.exception.ShowConflictException;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
-import com.cinereserve.cine_reserve.model.Theater;
 import com.cinereserve.cine_reserve.repository.MovieRepository;
 import com.cinereserve.cine_reserve.repository.ScreenRepository;
 import com.cinereserve.cine_reserve.repository.ShowRepository;
-import com.cinereserve.cine_reserve.service.ShowService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
