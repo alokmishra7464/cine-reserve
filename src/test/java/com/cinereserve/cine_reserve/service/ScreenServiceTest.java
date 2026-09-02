@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.service;
 
+import com.cinereserve.cine_reserve.exception.TheaterNotFoundException;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Theater;
 import com.cinereserve.cine_reserve.repository.ScreenRepository;
@@ -14,9 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ScreenServiceTest {
@@ -60,5 +61,23 @@ public class ScreenServiceTest {
 
         assertEquals(name, capturedScreen.getName());
         assertEquals(theater, capturedScreen.getTheater());
+    }
+
+    @Test
+    void shouldThrowErrorForTheaterNotFound() {
+
+        when(theaterRepository.findById(999L))
+                .thenReturn(Optional.empty());
+
+
+        assertThrows(
+                TheaterNotFoundException.class,
+                () -> screenService.createScreen(
+                        "Test Screen",
+                        999L
+                )
+        );
+
+        verify(screenRepository, never()).save(any(Screen.class));
     }
 }
