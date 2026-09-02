@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.service;
 
+import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.repository.MovieRepository;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,7 @@ public class MovieService {
     }
 
 
+    public Movie getMovieById(Long id) {
+        return movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException("Movie not found"));
+    }
 }

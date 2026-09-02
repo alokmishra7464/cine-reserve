@@ -27,4 +27,9 @@ public class MovieController {
         return movieService.createMovie(request.getTitle());
     }
 
+    @GetMapping("/{id}")
+    public Movie getMovieById(@PathVariable Long id) {
+        return movieService.getMovieById(id);
+    }
+
 }

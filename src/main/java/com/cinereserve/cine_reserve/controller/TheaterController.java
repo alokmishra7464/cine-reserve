@@ -3,10 +3,9 @@ package com.cinereserve.cine_reserve.controller;
 import com.cinereserve.cine_reserve.dto.CreateTheaterRequest;
 import com.cinereserve.cine_reserve.model.Theater;
 import com.cinereserve.cine_reserve.service.TheaterService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/theaters")
@@ -16,6 +15,16 @@ public class TheaterController {
 
     public TheaterController(TheaterService theaterService) {
         this.theaterService = theaterService;
+    }
+
+    @GetMapping
+    public List<Theater> getTheaters() {
+        return theaterService.getTheaters();
+    }
+
+    @GetMapping("/{id}")
+    public Theater getTheaterById(@PathVariable Long id) {
+        return theaterService.getTheaterById(id);
     }
 
     @PostMapping
