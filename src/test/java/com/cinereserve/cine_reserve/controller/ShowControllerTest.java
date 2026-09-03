@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.controller;
 
+import com.cinereserve.cine_reserve.dto.ShowResponse;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
@@ -51,13 +52,17 @@ public class ShowControllerTest {
         screen.setId(3L);
         screen.setName("Screen 1");
 
-        Show show = new Show();
-        show.setId(1L);
-        show.setMovie(movie);
-        show.setScreen(screen);
-        show.setStartTime(startTime);
-        show.setEndTime(endTime);
-        show.setPrice(price);
+        ShowResponse response = ShowResponse.builder()
+                .id(1L)
+                .movieTitle("The Amazing Spider-Man 2")
+                .screenId(3L)
+                .screenName("Screen 1")
+                .theaterName("DB Mall")
+                .startTime(LocalDateTime.of(2026, 9, 1, 19, 0))
+                .endTime(LocalDateTime.of(2026, 9, 1, 21, 0))
+                .price(new BigDecimal("250.00"))
+                .build();
+
 
         when(showService.createShow(
                 2L,
@@ -65,7 +70,7 @@ public class ShowControllerTest {
                 startTime,
                 endTime,
                 price
-        )).thenReturn(show);
+        )).thenReturn(response);
 
 
         // Act
@@ -94,11 +99,10 @@ public class ShowControllerTest {
                 .andExpect(jsonPath("$.endTime")
                         .value("2026-09-01T21:00:00"))
                 .andExpect(jsonPath("$.price").value(250.00))
-                .andExpect(jsonPath("$.movie.id").value(2))
-                .andExpect(jsonPath("$.movie.title")
+                .andExpect(jsonPath("$.movieTitle")
                         .value("The Amazing Spider-Man 2"))
-                .andExpect(jsonPath("$.screen.id").value(3))
-                .andExpect(jsonPath("$.screen.name")
+                .andExpect(jsonPath("$.screenId").value(3))
+                .andExpect(jsonPath("$.screenName")
                         .value("Screen 1"));
 
 

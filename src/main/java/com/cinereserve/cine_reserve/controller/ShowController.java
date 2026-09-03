@@ -1,6 +1,7 @@
 package com.cinereserve.cine_reserve.controller;
 
 import com.cinereserve.cine_reserve.dto.CreateShowRequest;
+import com.cinereserve.cine_reserve.dto.ShowResponse;
 import com.cinereserve.cine_reserve.model.Show;
 import com.cinereserve.cine_reserve.service.ShowService;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +19,17 @@ public class ShowController {
     }
 
     @GetMapping
-    public List<Show> getShows() {
+    public List<ShowResponse> getShows() {
         return showService.getShows();
     }
 
     @GetMapping("/{id}")
-    public Show getShowById(@PathVariable Long id) {
+    public ShowResponse getShowById(@PathVariable Long id) {
         return showService.getShowById(id);
     }
 
     @PostMapping
-    public Show createShow(@RequestBody CreateShowRequest request) {
+    public ShowResponse createShow(@RequestBody CreateShowRequest request) {
         return showService.createShow(
                 request.getMovieId(),
                 request.getScreenId(),

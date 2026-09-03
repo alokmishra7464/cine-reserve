@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.service;
 
+import com.cinereserve.cine_reserve.dto.ShowResponse;
 import com.cinereserve.cine_reserve.exception.InvalidShowTimeException;
 import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
 import com.cinereserve.cine_reserve.exception.ScreenNotFoundException;
@@ -80,7 +81,7 @@ public class ShowServiceTest {
         when(showRepository.save(any(Show.class)))
                 .thenReturn(savedShow);
 
-        Show result = showService.createShow(
+        ShowResponse result = showService.createShow(
                 1L,
                 2L,
                 starTime,

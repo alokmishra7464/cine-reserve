@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.service;
 
+import com.cinereserve.cine_reserve.dto.ShowResponse;
 import com.cinereserve.cine_reserve.exception.*;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
@@ -30,7 +31,20 @@ public class ShowService {
         this.screenRepository = screenRepository;
     }
 
-    public Show createShow(
+    private ShowResponse toResponse(Show show) {
+        return ShowResponse.builder()
+                .id(show.getId())
+                .movieTitle(show.getMovie().getTitle())
+                .screenId(show.getScreen().getId())
+                .screenName(show.getScreen().getName())
+                .theaterName(show.getScreen().getTheater().getName())
+                .startTime(show.getStartTime())
+                .endTime(show.getEndTime())
+                .price(show.getPrice())
+                .build();
+    }
+
+    public ShowResponse createShow(
             Long movieId,
             Long screenId,
             LocalDateTime startTime,
@@ -64,15 +78,20 @@ public class ShowService {
         show.setEndTime(endTime);
         show.setPrice(price);
 
-        return showRepository.save(show);
+        Show savedShow =  showRepository.save(show);
+        return toResponse(show);
 
     }
 
-    public List<Show> getShows() {
-        return showRepository.findAll();
+    public List<ShowResponse> getShows() {
+        return showRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Show getShowById(Long id) {
-        return showRepository.findById(id).orElseThrow(() -> new ShowNotFoundException("Show not found"));
+    public ShowResponse getShowById(Long id) {
+        Show show =  showRepository.findById(id).orElseThrow(() -> new ShowNotFoundException("Show not found"));
+        return toResponse(show);
     }
 }
