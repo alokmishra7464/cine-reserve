@@ -3,10 +3,9 @@ package com.cinereserve.cine_reserve.controller;
 import com.cinereserve.cine_reserve.dto.CreateShowRequest;
 import com.cinereserve.cine_reserve.model.Show;
 import com.cinereserve.cine_reserve.service.ShowService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/shows")
@@ -16,6 +15,16 @@ public class ShowController {
 
     public ShowController(ShowService showService) {
         this.showService = showService;
+    }
+
+    @GetMapping
+    public List<Show> getShows() {
+        return showService.getShows();
+    }
+
+    @GetMapping("/{id}")
+    public Show getShowById(@PathVariable Long id) {
+        return showService.getShowById(id);
     }
 
     @PostMapping

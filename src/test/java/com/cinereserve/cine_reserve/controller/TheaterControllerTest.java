@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.controller;
 
+import com.cinereserve.cine_reserve.exception.TheaterNotFoundException;
 import com.cinereserve.cine_reserve.model.Theater;
 import com.cinereserve.cine_reserve.service.TheaterService;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TheaterController.class)
 public class TheaterControllerTest {
@@ -112,5 +112,22 @@ public class TheaterControllerTest {
                 .andExpect(jsonPath("$.city").value("Bhopal"));
 
         verify(theaterService).getTheaterById(4L);
+    }
+
+    @Test
+    void shouldReturn404WhenTheaterNotFound() throws Exception {
+
+        when(theaterService.getTheaterById(999L))
+                .thenThrow(
+                        new TheaterNotFoundException("Theater not found")
+                );
+
+        mockMvc.perform(
+                        get("/api/theaters/999")
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Theater not found"));
+
+        verify(theaterService).getTheaterById(999L);
     }
 }

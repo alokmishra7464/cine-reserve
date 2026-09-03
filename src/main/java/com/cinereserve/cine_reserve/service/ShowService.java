@@ -1,9 +1,6 @@
 package com.cinereserve.cine_reserve.service;
 
-import com.cinereserve.cine_reserve.exception.InvalidShowTimeException;
-import com.cinereserve.cine_reserve.exception.MovieNotFoundException;
-import com.cinereserve.cine_reserve.exception.ScreenNotFoundException;
-import com.cinereserve.cine_reserve.exception.ShowConflictException;
+import com.cinereserve.cine_reserve.exception.*;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.model.Screen;
 import com.cinereserve.cine_reserve.model.Show;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ShowService {
@@ -68,5 +66,13 @@ public class ShowService {
 
         return showRepository.save(show);
 
+    }
+
+    public List<Show> getShows() {
+        return showRepository.findAll();
+    }
+
+    public Show getShowById(Long id) {
+        return showRepository.findById(id).orElseThrow(() -> new ShowNotFoundException("Show not found"));
     }
 }
