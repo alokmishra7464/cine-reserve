@@ -4,6 +4,7 @@ import com.cinereserve.cine_reserve.enums.SeatType;
 import com.cinereserve.cine_reserve.enums.ShowSeatStatus;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
