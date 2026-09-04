@@ -1,13 +1,13 @@
 package com.cinereserve.cine_reserve.repository;
 
-import com.cinereserve.cine_reserve.model.Seat;
+import com.cinereserve.cine_reserve.model.ShowSeat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface SeatRepository extends JpaRepository<Seat, Long> {
+public interface ShowSeatRepository extends JpaRepository<ShowSeat, Long> {
 
-    List<Seat> findByScreenId(Long screenId);
+    List<ShowSeat> findByShowId(Long showId);
 }

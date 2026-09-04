@@ -1,14 +1,13 @@
 package com.cinereserve.cine_reserve.service;
 
 import com.cinereserve.cine_reserve.dto.ShowResponse;
+import com.cinereserve.cine_reserve.dto.ShowSeatResponse;
+import com.cinereserve.cine_reserve.enums.ShowSeatStatus;
 import com.cinereserve.cine_reserve.exception.*;
-import com.cinereserve.cine_reserve.model.Movie;
-import com.cinereserve.cine_reserve.model.Screen;
-import com.cinereserve.cine_reserve.model.Show;
-import com.cinereserve.cine_reserve.repository.MovieRepository;
-import com.cinereserve.cine_reserve.repository.ScreenRepository;
-import com.cinereserve.cine_reserve.repository.ShowRepository;
+import com.cinereserve.cine_reserve.model.*;
+import com.cinereserve.cine_reserve.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,15 +19,21 @@ public class ShowService {
     private final ShowRepository showRepository;
     private final MovieRepository movieRepository;
     private final ScreenRepository screenRepository;
+    private final SeatRepository seatRepository;
+    private final ShowSeatRepository showSeatRepository;
 
     public ShowService(
             ShowRepository showRepository,
             MovieRepository movieRepository,
-            ScreenRepository screenRepository)
+            ScreenRepository screenRepository,
+            ShowSeatRepository showSeatRepository,
+            SeatRepository seatRepository)
     {
         this.showRepository = showRepository;
         this.movieRepository = movieRepository;
         this.screenRepository = screenRepository;
+        this.showSeatRepository = showSeatRepository;
+        this.seatRepository = seatRepository;
     }
 
     private ShowResponse toResponse(Show show) {
@@ -44,6 +49,16 @@ public class ShowService {
                 .build();
     }
 
+    private ShowSeatResponse toShowSeatResponse(ShowSeat showSeat) {
+        return ShowSeatResponse.builder()
+                .id(showSeat.getId())
+                .rowLabel(showSeat.getSeat().getRowLabel())
+                .seatNumber(showSeat.getSeat().getSeatNumber())
+                .seatType(showSeat.getSeat().getSeatType())
+                .showSeatStatus(showSeat.getStatus()).build();
+    }
+
+    @Transactional
     public ShowResponse createShow(
             Long movieId,
             Long screenId,
@@ -79,6 +94,18 @@ public class ShowService {
         show.setPrice(price);
 
         Show savedShow =  showRepository.save(show);
+
+        //find seats for that screen and make them available(construct showSeat of it)
+        List<Seat> seats = seatRepository.findByScreenId(screenId);
+        for(Seat seat : seats) {
+            ShowSeat showSeat = new ShowSeat();
+            showSeat.setShow(show);
+            showSeat.setSeat(seat);
+            showSeat.setStatus(ShowSeatStatus.AVAILABLE);
+
+            showSeatRepository.save(showSeat);
+        }
+
         return toResponse(show);
 
     }
@@ -93,5 +120,13 @@ public class ShowService {
     public ShowResponse getShowById(Long id) {
         Show show =  showRepository.findById(id).orElseThrow(() -> new ShowNotFoundException("Show not found"));
         return toResponse(show);
+    }
+
+    public List<ShowSeatResponse> getShowSeats(Long showId) {
+        List<ShowSeat> showSeats = showSeatRepository.findByShowId(showId);
+
+        return showSeats.stream()
+                .map(this::toShowSeatResponse)
+                .toList();
     }
 }

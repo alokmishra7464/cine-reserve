@@ -2,6 +2,7 @@ package com.cinereserve.cine_reserve.controller;
 
 import com.cinereserve.cine_reserve.dto.CreateShowRequest;
 import com.cinereserve.cine_reserve.dto.ShowResponse;
+import com.cinereserve.cine_reserve.dto.ShowSeatResponse;
 import com.cinereserve.cine_reserve.model.Show;
 import com.cinereserve.cine_reserve.service.ShowService;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,10 @@ public class ShowController {
                 request.getEndTime(),
                 request.getPrice()
         );
+    }
+
+    @GetMapping("/{showId}/seats")
+    public List<ShowSeatResponse> getShowSeats(@PathVariable Long showId) {
+        return showService.getShowSeats(showId);
     }
 }
