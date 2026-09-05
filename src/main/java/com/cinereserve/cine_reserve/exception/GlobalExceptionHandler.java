@@ -57,4 +57,11 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(SeatNotFoundException.class)
+    public ResponseEntity<String> handleSeatNotFound(SeatNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(exception.getMessage());
+    }
+
 }
