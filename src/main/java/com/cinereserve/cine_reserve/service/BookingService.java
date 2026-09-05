@@ -4,6 +4,8 @@ import com.cinereserve.cine_reserve.dto.BookingRequest;
 import com.cinereserve.cine_reserve.dto.BookingResponse;
 import com.cinereserve.cine_reserve.enums.BookingStatus;
 import com.cinereserve.cine_reserve.enums.ShowSeatStatus;
+import com.cinereserve.cine_reserve.exception.ResourceNotFoundException;
+import com.cinereserve.cine_reserve.exception.SeatConflictException;
 import com.cinereserve.cine_reserve.exception.SeatNotFoundException;
 import com.cinereserve.cine_reserve.exception.ShowNotFoundException;
 import com.cinereserve.cine_reserve.model.*;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +66,7 @@ public class BookingService {
 
 
             if(showSeat.getStatus() != ShowSeatStatus.AVAILABLE) {
-                throw new IllegalStateException("Seat " + seatId + "is not available");
+                throw new SeatConflictException("Seat " + seatId + " is not available");
             }
 
             showSeats.add(showSeat);
@@ -103,6 +106,36 @@ public class BookingService {
                 .totalAmount(booking.getTotalAmount())
                 .createdAt(booking.getCreatedAt())
                 .seatIds(bookedSeatIds)
+                .build();
+    }
+
+    public BookingResponse getBookingById(Long bookingId) throws AccessDeniedException {
+
+        Authentication authentication = SecurityContextHolder
+                .getContext().getAuthentication();
+
+        User user = (User) authentication.getPrincipal();
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if(!booking.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You are not allowed to access this booking");
+        }
+
+        List<Long> seatIds = bookingSeatRepository
+                .findByBookingId(bookingId)
+                .stream()
+                .map(bookingSeat -> bookingSeat.getSeat().getId())
+                .toList();
+
+        return BookingResponse.builder()
+                .bookingId(booking.getId())
+                .showId(booking.getShow().getId())
+                .status(booking.getStatus())
+                .totalAmount(booking.getTotalAmount())
+                .createdAt(booking.getCreatedAt())
+                .seatIds(seatIds)
                 .build();
     }
 }
