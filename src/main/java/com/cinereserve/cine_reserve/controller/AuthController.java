@@ -1,5 +1,7 @@
 package com.cinereserve.cine_reserve.controller;
 
+import com.cinereserve.cine_reserve.dto.LoginRequest;
+import com.cinereserve.cine_reserve.dto.LoginResponse;
 import com.cinereserve.cine_reserve.dto.RegisterRequest;
 import com.cinereserve.cine_reserve.dto.UserResponse;
 import com.cinereserve.cine_reserve.service.AuthService;
@@ -21,5 +23,10 @@ public class AuthController {
     @PostMapping("/register")
     public UserResponse register(@RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
