@@ -4,10 +4,7 @@ import com.cinereserve.cine_reserve.dto.BookingRequest;
 import com.cinereserve.cine_reserve.dto.BookingResponse;
 import com.cinereserve.cine_reserve.enums.BookingStatus;
 import com.cinereserve.cine_reserve.enums.ShowSeatStatus;
-import com.cinereserve.cine_reserve.exception.ResourceNotFoundException;
-import com.cinereserve.cine_reserve.exception.SeatConflictException;
-import com.cinereserve.cine_reserve.exception.SeatNotFoundException;
-import com.cinereserve.cine_reserve.exception.ShowNotFoundException;
+import com.cinereserve.cine_reserve.exception.*;
 import com.cinereserve.cine_reserve.model.*;
 import com.cinereserve.cine_reserve.repository.BookingRepository;
 import com.cinereserve.cine_reserve.repository.BookingSeatRepository;
@@ -137,5 +134,84 @@ public class BookingService {
                 .createdAt(booking.getCreatedAt())
                 .seatIds(seatIds)
                 .build();
+    }
+
+    public List<BookingResponse> getMyBooking() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = (User) authentication.getPrincipal();
+
+        List<Booking> bookings = bookingRepository.findByUserId(user.getId());
+
+        return bookings.stream()
+                .map(booking -> {
+
+                    List<Long> seatIds = bookingSeatRepository
+                            .findByBookingId(booking.getId())
+                            .stream()
+                            .map(bookingSeat ->
+                                    bookingSeat.getSeat().getId())
+                            .toList();
+
+                    return new BookingResponse(
+                            booking.getId(),
+                            booking.getShow().getId(),
+                            booking.getStatus(),
+                            booking.getTotalAmount(),
+                            booking.getCreatedAt(),
+                            seatIds
+                    );
+                })
+                .toList();
+    }
+
+    @Transactional
+    public BookingResponse cancelBooking(Long bookingId) throws AccessDeniedException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if(!booking.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You are not allowed to cancel this booking");
+        }
+
+        if (booking.getStatus() != BookingStatus.CONFIRMED) {
+            throw new BookingNotCancellableException(
+                    "Only confirmed bookings can be cancelled"
+            );
+        }
+
+        List<BookingSeat> bookingSeats = bookingSeatRepository.findByBookingId(bookingId);
+
+        List<Long> seatIds = new ArrayList<>();
+
+        for(BookingSeat bookingSeat : bookingSeats) {
+
+            ShowSeat showSeat = showSeatRepository.findByShowIdAndSeatId(
+                    booking.getShow().getId(),
+                    bookingSeat.getSeat().getId()
+            ).orElseThrow(() -> new ResourceNotFoundException("Show seat not found"));
+
+            showSeat.setStatus(ShowSeatStatus.AVAILABLE);
+
+            seatIds.add(bookingSeat.getSeat().getId());
+
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+
+        return new BookingResponse(
+                booking.getId(),
+                booking.getShow().getId(),
+                booking.getStatus(),
+                booking.getTotalAmount(),
+                booking.getCreatedAt(),
+                seatIds
+        );
     }
 }

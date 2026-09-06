@@ -1,0 +1,7 @@
+package com.cinereserve.cine_reserve.exception;
+
+public class BookingNotCancellableException extends RuntimeException {
+    public BookingNotCancellableException(String message) {
+        super(message);
+    }
+}

@@ -78,4 +78,13 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(BookingNotCancellableException.class)
+    public ResponseEntity<String> handleBookingNotCancellable(
+            BookingNotCancellableException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+
 }
