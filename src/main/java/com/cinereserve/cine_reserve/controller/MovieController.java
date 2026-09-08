@@ -1,8 +1,10 @@
 package com.cinereserve.cine_reserve.controller;
 
 import com.cinereserve.cine_reserve.dto.CreateMovieRequest;
+import com.cinereserve.cine_reserve.dto.MovieResponse;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.service.MovieService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +20,29 @@ public class MovieController {
     }
 
     @GetMapping
-    public List<Movie> getMovies() {
+    public List<MovieResponse> getMovies() {
         return movieService.getMovies();
     }
 
     @PostMapping
-    public Movie createMovie(@RequestBody CreateMovieRequest request) {
+    public MovieResponse createMovie(@RequestBody CreateMovieRequest request) {
         return movieService.createMovie(request.getTitle());
     }
 
     @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Long id) {
+    public MovieResponse getMovieById(@PathVariable Long id) {
         return movieService.getMovieById(id);
+    }
+
+    @PutMapping("/{id}")
+    public MovieResponse updateMovie(@PathVariable Long id, @RequestBody String title) {
+        return movieService.updateMovie(id, title);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.ok().body("Movie with id: " + id + " is deleted");
     }
 
 }
