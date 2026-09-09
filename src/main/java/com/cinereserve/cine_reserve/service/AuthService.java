@@ -4,6 +4,7 @@ import com.cinereserve.cine_reserve.dto.LoginRequest;
 import com.cinereserve.cine_reserve.dto.LoginResponse;
 import com.cinereserve.cine_reserve.dto.RegisterRequest;
 import com.cinereserve.cine_reserve.dto.UserResponse;
+import com.cinereserve.cine_reserve.enums.Role;
 import com.cinereserve.cine_reserve.exception.EmailAlreadyExistsException;
 import com.cinereserve.cine_reserve.exception.InvalidCredentialsException;
 import com.cinereserve.cine_reserve.model.User;
@@ -33,6 +34,7 @@ public class AuthService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setRole(Role.USER);
 
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 

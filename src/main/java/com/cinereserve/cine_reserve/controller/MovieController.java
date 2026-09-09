@@ -4,6 +4,7 @@ import com.cinereserve.cine_reserve.dto.CreateMovieRequest;
 import com.cinereserve.cine_reserve.dto.MovieResponse;
 import com.cinereserve.cine_reserve.model.Movie;
 import com.cinereserve.cine_reserve.service.MovieService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class MovieController {
     }
 
     @PostMapping
-    public MovieResponse createMovie(@RequestBody CreateMovieRequest request) {
+    public MovieResponse createMovie(@Valid @RequestBody CreateMovieRequest request) {
         return movieService.createMovie(request.getTitle());
     }
 

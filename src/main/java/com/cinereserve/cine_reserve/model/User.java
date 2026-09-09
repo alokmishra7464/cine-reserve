@@ -1,5 +1,6 @@
 package com.cinereserve.cine_reserve.model;
 
+import com.cinereserve.cine_reserve.enums.Role;
 import jakarta.persistence.*;
 
 @Entity
@@ -26,6 +27,10 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     public Long getId() {
         return id;
@@ -57,5 +62,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
